@@ -1,0 +1,10 @@
+---,EquipmentType,SkeletalMesh
+Head,"Equipment_Head","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Heads/SKM_UE5__Elite_Soldier_Head_01.SKM_UE5__Elite_Soldier_Head_01'"",""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Heads/SKM_UE5__Elite_Soldier_Head_02.SKM_UE5__Elite_Soldier_Head_02'"",""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Heads/SKM_UE5__Elite_Soldier_Head_03.SKM_UE5__Elite_Soldier_Head_03'"",""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Heads/SKM_UE5__Elite_Soldier_Head_04.SKM_UE5__Elite_Soldier_Head_04'"")"
+Body,"Equipment_Body","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Body/SKM_UE5__Elite_Soldier_Body.SKM_UE5__Elite_Soldier_Body'"")"
+ExoLegs,"Equipment_ExoLegs","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/ExoLogs/SKM_UE5__Elite_Exo_Legs.SKM_UE5__Elite_Exo_Legs'"")"
+Laptop,"Equipment_Laptop","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Laptop/SKM_UE5__Elite_Soldier_Laptop.SKM_UE5__Elite_Soldier_Laptop'"")"
+LeftBag,"Equipment_LeftBag","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Bag/SKM_UE5__Elite_Soldier_Bag_L_Leg.SKM_UE5__Elite_Soldier_Bag_L_Leg'"")"
+RightBag,"Equipment_RightBag","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Bag/SKM_UE5__Elite_Soldier_Bag_R_Leg.SKM_UE5__Elite_Soldier_Bag_R_Leg'"")"
+ChestBag,"Equipment_ChestBag","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Bag/SKM_UE5__Elite_Soldier_Bags_Body.SKM_UE5__Elite_Soldier_Bags_Body'"")"
+LeftGranade,"Equipment_LeftGranade","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Granade/SKM_UE5__Elite_Soldier_Grenade.SKM_UE5__Elite_Soldier_Grenade'"")"
+RightGranade,"Equipment_RightGranade","(""/Script/Engine.SkeletalMesh'/Game/Characters/Elite_Solders/Granade/SKM_UE5__Elite_Soldier_Grenade_2.SKM_UE5__Elite_Soldier_Grenade_2'"")"
