@@ -23,7 +23,7 @@ class FTPSGAME_API AHero : public ABaseCharacter
 	UPROPERTY(VisibleDefaultsOnly, meta=(AllowPrivateAccess=true))
 	TObjectPtr<USpringArmComponent> SpringArm;
 	
-	UPROPERTY(VisibleDefaultsOnly, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess=true))

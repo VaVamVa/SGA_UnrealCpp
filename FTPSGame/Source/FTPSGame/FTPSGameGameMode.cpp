@@ -3,6 +3,7 @@
 #include "FTPSGameGameMode.h"
 #include "FTPSGameCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Widgets/PlayerHUD.h"
 
 AFTPSGameGameMode::AFTPSGameGameMode()
 {
@@ -12,4 +13,6 @@ AFTPSGameGameMode::AFTPSGameGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	HUDClass = APlayerHUD::StaticClass();
 }

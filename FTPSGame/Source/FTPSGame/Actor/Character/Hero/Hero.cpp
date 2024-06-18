@@ -48,7 +48,6 @@ void AHero::BeginPlay()
 				Subsystem->AddMappingContext(InputDataAsset->GeneralInputMapping.InputMappingContext, 0);
 			if (InputDataAsset->CombatInputMapping.InputMappingContext)
 				Subsystem->AddMappingContext(InputDataAsset->CombatInputMapping.InputMappingContext, 0);
-				
 		}
 	}
 }
@@ -95,6 +94,13 @@ void AHero::SetCombatInputMapping(UEnhancedInputComponent* EnhancedPlayerInputCo
 	Action = *InputDataAsset->CombatInputMapping.InputActionMap.Find(ECombatInputAction::SubSlot);
 	if (Action)
 		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &ABaseCharacter::SwapSubSlotWeapon);
+
+	Action = *InputDataAsset->CombatInputMapping.InputActionMap.Find(ECombatInputAction::Aim);
+	if (Action)
+	{
+		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Ongoing, this, &ABaseCharacter::StartAiming);
+		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &ABaseCharacter::EndAiming);
+	}
 }
 
 void AHero::Move(const FInputActionValue& Value)

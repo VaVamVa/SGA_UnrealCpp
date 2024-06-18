@@ -106,11 +106,20 @@ public:
 
 	FORCENOINLINE bool IsAiming() { return bAiming; }
 
+	UFUNCTION()
+	void EndSwapping();
+
 	FORCEINLINE bool GetMirror() { return bMirrorPlaying; }
 	FORCEINLINE void SetMirror(bool InState) { bMirrorPlaying = InState; }
 
 	void SwapMainSlotWeapon();
 	void SwapSubSlotWeapon();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void StartAiming();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void EndAiming();
 
 private:
 	void CreateSkeletalMeshComponents();

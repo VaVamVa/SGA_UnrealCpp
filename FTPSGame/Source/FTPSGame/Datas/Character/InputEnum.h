@@ -16,5 +16,6 @@ enum class ECombatInputAction
 	None UMETA(Hidden),
 	Interact,
 	MainSlot,
-	SubSlot
+	SubSlot,
+	Aim
 };

@@ -92,10 +92,20 @@ void ABaseCharacter::SwapSubSlotWeapon()
 	SwapWeapon(ESlot::Sub);
 }
 
+void ABaseCharacter::StartAiming_Implementation()
+{
+	bAiming = true;
+}
+
+void ABaseCharacter::EndAiming_Implementation()
+{
+	bAiming = false;
+}
+
 void ABaseCharacter::SwapWeapon(ESlot InSlot)
 {
 	if (bSwapping == true) return;
-	//bSwapping = true;
+	bSwapping = true;
 	bMirrorPlaying = false;
 
 	ABaseWeapon* SelectedWeapon = nullptr;
@@ -194,6 +204,11 @@ void ABaseCharacter::PlayCustommMontage(FString Key, float PlayRate, int32 Custo
 
 	bMirrorPlaying = InMirrorPlaying;
 	PlayAnimMontage(Montage, PlayRate);
+}
+
+void ABaseCharacter::EndSwapping()
+{
+	bSwapping = false;
 }
 
 void ABaseCharacter::CreateSkeletalMeshComponents()
