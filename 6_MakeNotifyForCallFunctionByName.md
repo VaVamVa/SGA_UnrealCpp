@@ -7,7 +7,8 @@
 ## 2. 사용되는 개념
 - Implementation : Blueprint와 Cpp 둘 다 사용되는 함수의 경우 Generated Body에서 원본 클래스의 함수 어미에 `_Implementation`를 추가하여 선언해준다.<br>
 Cpp 정의부에서는 이를 이용하여 함수를 Override 해주어야 한다.<br>
-원본의 함수에 경우 Blueprint에서 사용하게 된다.
+원본의 함수에 경우 Blueprint에서 사용하게 된다.<br>
+`BlueprintNativeEvent`인 함수를 Override한 경우, Blueprint에서 해당 함수(Event)를 호출했을 경우 Implementation 메서드는 호출되지 않는다. [Docs_GameplayArchitecture_함수지정자]()
 
 - FindFunction : 선언한 함수의 이름(`FName`)에 따라 함수 포인터를 연결해주는 AActor의 기본 함수. 매우 요긴하게 사용 가능할 것으로 보인다.
     - 이와 연계하여 Actor의 ProcessEvent를 활용, Delegate처럼 이용한다.

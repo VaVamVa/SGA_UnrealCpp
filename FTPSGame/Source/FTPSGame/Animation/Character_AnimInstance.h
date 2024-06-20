@@ -32,6 +32,15 @@ class FTPSGAME_API UCharacter_AnimInstance : public UAnimInstance
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = true, ClampMin = 0.00))
 	bool bFalling;
 
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = true, ClampMin = 0.00))
+	bool bAiming;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = true, ClampMin = 0.00))
+	float Yaw;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "BlendSpace", meta = (AllowPrivateAccess = true, ClampMin = 0.00))
+	float Pitch;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = IK, meta = (AllowPrivateAccess = true))
 	FVector InteractTargetLocation;
 

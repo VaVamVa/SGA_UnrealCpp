@@ -74,6 +74,7 @@ private:
 	TMap<FString, FAnimMontageArray> AnimMontageMap;
 
 	// Aiming
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bAiming = false;
 	// Swapping
 	bool bSwapping = false;

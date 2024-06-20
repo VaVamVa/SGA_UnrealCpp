@@ -154,7 +154,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GEngine->AddOnScreenDebugMessage(125, 0.2, FColor::Blue, FString("Cur Mirror : ") + (bMirrorPlaying ? "True" : "False"));
+	//GEngine->AddOnScreenDebugMessage(125, 0.2, FColor::Blue, FString("Cur Mirror : ") + (bMirrorPlaying ? "True" : "False"));
 }
 
 // Called to bind functionality to input
@@ -209,6 +209,7 @@ void ABaseCharacter::PlayCustommMontage(FString Key, float PlayRate, int32 Custo
 void ABaseCharacter::EndSwapping()
 {
 	bSwapping = false;
+	bMirrorPlaying = false;
 }
 
 void ABaseCharacter::CreateSkeletalMeshComponents()
