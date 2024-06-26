@@ -17,7 +17,7 @@ void UCharacter_AnimInstance::NativeUpdateAnimation(float DeltaSecond)
 	// 추후 노티파이 추가되면 노피파이로 처리하자.
 	//GEngine->AddOnScreenDebugMessage(122, DeltaSecond, FColor::Emerald, FString("Cur Playing Montage Num : ") + FString::FromInt(MontageInstances.Num()));
 	//GEngine->AddOnScreenDebugMessage(123, DeltaSecond, FColor::Emerald, FString("Cur Mirror : ") + (OwnerCharacter->GetMirror() ? "True" : "False"));
-	GEngine->AddOnScreenDebugMessage(12, DeltaSecond, FColor::Black, bAiming ? "True" : "False");
+	//GEngine->AddOnScreenDebugMessage(12, DeltaSecond, FColor::Black, bAiming ? "True" : "False");
 	
 	if (MontageInstances.Num() == 0)
 		OwnerCharacter->SetMirror(false);

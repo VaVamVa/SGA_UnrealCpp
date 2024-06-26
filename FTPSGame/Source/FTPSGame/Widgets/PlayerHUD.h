@@ -12,6 +12,7 @@
 
 class AHero;
 class UCrossHair;
+class UAimCircle;
 
 UCLASS()
 class FTPSGAME_API APlayerHUD : public AHUD
@@ -23,8 +24,12 @@ class FTPSGAME_API APlayerHUD : public AHUD
 
 	UPROPERTY()
 	UCrossHair* CrossHair;
+	
+	UPROPERTY()
+	UAimCircle* AimCircle;
 
 	UClass* CrossHairClass;
+	UClass* AimCircleClass;
 
 public:
 	APlayerHUD();

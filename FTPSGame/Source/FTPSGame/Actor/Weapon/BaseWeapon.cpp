@@ -3,13 +3,19 @@
 
 #include "Actor/Weapon/BaseWeapon.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+
 #include "Actor/Character/BaseCharacter.h"
+#include "Actor/Character/Hero/Hero.h"
+
 #include "Animation/Character_AnimInstance.h"
 
 #include "Utilities/Helper.h"
 #include "Components/ArrowComponent.h"
 
 #include "Datas/Weapons/DA_WeaponDataAsset.h"
+
+#define ZERO_POINT 25000; //250m to cm
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -97,6 +103,12 @@ void ABaseWeapon::ConversionItemType(EWeaponItemType InType, USceneComponent* In
 	}
 }
 
+void ABaseWeapon::UpdateHitPoint()
+{
+	FVector MuzzleLocation = Body->GetSocketLocation("MuzzleFlash");
+	HitPoint = MuzzleLocation + GetActorForwardVector() * ZERO_POINT;
+}
+
 // Called when the game starts or when spawned
 void ABaseWeapon::BeginPlay()
 {
@@ -121,5 +133,9 @@ void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector MuzzleLocation = Body->GetSocketLocation("MuzzleFlash");
+	TArray<AActor*> DefaultArray;
+	FHitResult r;
+	UKismetSystemLibrary::LineTraceSingle(this, MuzzleLocation, HitPoint, ETraceTypeQuery::TraceTypeQuery1, false, DefaultArray, EDrawDebugTrace::ForDuration, r, true);
 }
 

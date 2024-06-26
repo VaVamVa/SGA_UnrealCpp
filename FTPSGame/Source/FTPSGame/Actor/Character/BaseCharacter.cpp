@@ -26,7 +26,7 @@ ABaseCharacter::ABaseCharacter()
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 
-	GetMesh()->SetAnimClass(Helper::GetClassFromConstructor<UAnimInstance>("/Script/Engine.AnimBlueprint'/Game/Animation/AnimInstance/BP_Character_AnimInstance.BP_Character_AnimInstance'"));
+	GetMesh()->SetAnimClass(Helper::GetClassFromConstructor<UAnimInstance>("/Game/Animation/AnimInstance/BP_Character_AnimInstance"));
 
 	InteractComp = Helper::CreateSceneComponent<UInteractComponent>(this, "InteractComponent", RootComponent);
 	AttachmentComp = Helper::CreateActorComponent<UAttachmentComponent>(this, "AttachmentComponent");

@@ -63,7 +63,7 @@ private:
 	TObjectPtr<UAttachmentComponent> AttachmentComp;
 
 	// Weapon
-	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowOrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = true))
 	UDA_WeaponDataAsset* WeaponAsset;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
@@ -105,7 +105,8 @@ public:
 
 	void PlayCustommMontage(FString Key, float PlayRate = 1.0f, int32 CustomIndex = 0, bool InMirrorPlaying = false);
 
-	FORCENOINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE ABaseWeapon* GetEquippedWeapon() { return EquippedWeapon; }
 
 	UFUNCTION()
 	void EndSwapping();

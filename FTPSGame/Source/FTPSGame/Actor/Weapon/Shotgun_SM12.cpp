@@ -2,6 +2,7 @@
 
 
 #include "Actor/Weapon/Shotgun_SM12.h"
+#include "Datas/Weapons/DA_WeaponDataAsset.h"
 #include "Utilities/Helper.h"
 
 AShotgun_SM12::AShotgun_SM12()

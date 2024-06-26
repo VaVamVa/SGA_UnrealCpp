@@ -34,6 +34,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	FString RowName;
 	
+	FVector HitPoint;
+
 public:	
 	// Sets default values for this actor's properties
 	ABaseWeapon();
@@ -47,6 +49,7 @@ protected:
 
 	void SetMesh(EWeaponName InWeaponName);
 
+
 public:	
 	virtual void Interact(ABaseCharacter* InCharacter) override;
 
@@ -54,6 +57,9 @@ public:
 
 	FORCEINLINE USkeletalMeshComponent* GetMesh() { return Body; }
 	FORCEINLINE UDA_WeaponDataAsset* GetData() { return DataAsset; }
+	FORCEINLINE FVector GetHitPoint() { return HitPoint; }
 
+	void UpdateHitPoint();
 
+protected:
 };

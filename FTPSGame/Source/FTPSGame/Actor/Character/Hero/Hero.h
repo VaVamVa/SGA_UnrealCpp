@@ -33,6 +33,8 @@ class FTPSGAME_API AHero : public ABaseCharacter
 public:
 	AHero();
 
+	virtual void Tick(float DeltaSecond) override;
+
 protected:
 	virtual void BeginPlay() override;
 

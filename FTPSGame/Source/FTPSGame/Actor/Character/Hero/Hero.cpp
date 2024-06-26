@@ -8,6 +8,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Actor/Weapon/BaseWeapon.h"
+
 
 AHero::AHero()
 {
@@ -31,6 +33,14 @@ AHero::AHero()
 
 	InputDataAsset = Helper::GetAssetFromConstructor<UDA_InputMappingDataAsset>("/Script/FTPSGame.DA_InputMappingDataAsset'/Game/Characters/Hero/Input/DA_InputDataAsset.DA_InputDataAsset'");
 
+}
+
+void AHero::Tick(float DeltaSecond)
+{
+	Super::Tick(DeltaSecond);
+
+	if (ABaseWeapon* Weapon = GetEquippedWeapon())
+		Weapon->UpdateHitPoint();
 }
 
 void AHero::BeginPlay()
