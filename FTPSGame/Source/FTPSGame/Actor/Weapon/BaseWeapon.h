@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#include "Datas/Weapons/EWeaponEnum.h"
 #include "Datas/Weapons/FWeaponStruct.h"
 
 #include "Actor/Interface/Interact.h"
@@ -21,6 +22,10 @@ class FTPSGAME_API ABaseWeapon : public AActor, public IInteract
 
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<USkeletalMeshComponent> Body;
+
+	bool bFire;
+	bool bChamberEmpty;
+	EFireMode FireMode = EFireMode::Single;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -55,11 +60,14 @@ public:
 
 	void ConversionItemType(EWeaponItemType InType, USceneComponent* InParentComponent = nullptr, FName InSocketName = "");
 
-	FORCEINLINE USkeletalMeshComponent* GetMesh() { return Body; }
-	FORCEINLINE UDA_WeaponDataAsset* GetData() { return DataAsset; }
-	FORCEINLINE FVector GetHitPoint() { return HitPoint; }
+	FORCEINLINE bool IsFire() const { return bFire; }
+	FORCEINLINE bool IsChamberEmpty() const { return bChamberEmpty; }
+	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return Body; }
+	FORCEINLINE UDA_WeaponDataAsset* GetData() const { return DataAsset; }
+	FORCEINLINE FVector GetHitPoint() const { return HitPoint; }
+	FORCEINLINE EFireMode GetCurrentFireMode() const { return FireMode; }
 
-	void UpdateHitPoint();
+	void UpdateHitPoint(float DeltaSecond);
 
 protected:
 };

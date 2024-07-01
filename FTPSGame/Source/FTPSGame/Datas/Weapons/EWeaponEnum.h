@@ -27,3 +27,11 @@ enum class EWeaponItemType
 	Dropped,
 	Equipped
 };
+
+UENUM(Blueprintable)
+enum class EFireMode : uint8
+{
+	Single,
+	Burst,
+	Auto
+};

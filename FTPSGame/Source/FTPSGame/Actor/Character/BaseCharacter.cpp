@@ -155,6 +155,9 @@ void ABaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//GEngine->AddOnScreenDebugMessage(125, 0.2, FColor::Blue, FString("Cur Mirror : ") + (bMirrorPlaying ? "True" : "False"));
+
+	if (ABaseWeapon* Weapon = GetEquippedWeapon())
+		Weapon->UpdateHitPoint(DeltaTime);
 }
 
 // Called to bind functionality to input

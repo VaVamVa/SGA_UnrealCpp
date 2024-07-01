@@ -4,9 +4,11 @@
 #include "Actor/Weapon/BaseWeapon.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
-#include "Actor/Character/BaseCharacter.h"
+#include "GameFramework/Character.h"
 #include "Actor/Character/Hero/Hero.h"
+#include "Camera/CameraComponent.h"
 
 #include "Animation/Character_AnimInstance.h"
 
@@ -14,6 +16,7 @@
 #include "Components/ArrowComponent.h"
 
 #include "Datas/Weapons/DA_WeaponDataAsset.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #define ZERO_POINT 25000; //250m to cm
 
@@ -103,10 +106,61 @@ void ABaseWeapon::ConversionItemType(EWeaponItemType InType, USceneComponent* In
 	}
 }
 
-void ABaseWeapon::UpdateHitPoint()
+void ABaseWeapon::UpdateHitPoint(float DeltaSecond)
 {
+	AHero* Hero = Cast<AHero>(GetOwner());
+
 	FVector MuzzleLocation = Body->GetSocketLocation("MuzzleFlash");
 	HitPoint = MuzzleLocation + GetActorForwardVector() * ZERO_POINT;
+
+	if (Hero == nullptr) return;  // 추후 enemy 용 조건문으로 변경해야 함.
+
+
+	FHitResult HitResult;
+	FVector LineTraceStartPoint = Hero->GetCamera()->GetComponentLocation();
+	FVector LineTraceEndPoint = LineTraceStartPoint + Hero->GetCamera()->GetForwardVector() * ZERO_POINT;
+
+	TArray<AActor*> IgnoreActors;
+	GetOwner()->GetAllChildActors(IgnoreActors);
+	IgnoreActors.Add(GetOwner());
+
+	UKismetSystemLibrary::LineTraceSingle(this, 
+		LineTraceStartPoint, LineTraceEndPoint, 
+		ETraceTypeQuery::TraceTypeQuery1 /* == Visibility, 2 == Camera */, false, 
+		IgnoreActors, 
+		EDrawDebugTrace::ForOneFrame, 
+		HitResult, 
+		true
+	);
+
+	if (HitResult.bBlockingHit == false || HitResult.Distance <= 500)
+		HitPoint = LineTraceEndPoint;
+	else 
+		HitPoint = HitResult.ImpactPoint;
+
+	FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(MuzzleLocation, HitPoint);
+	float Speed = 5 / Cast<ACharacter>(GetOwner())->GetCharacterMovement()->RotationRate.Yaw / DeltaSecond;
+	if (Hero->IsAiming()) Speed *= 3;
+	NewRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), NewRotation, DeltaSecond, Speed);
+
+	SetActorRotation(NewRotation);
+
+	FHitResult AimHitResult;
+
+	FVector MuzzleEndLocation = MuzzleLocation + GetActorForwardVector() * ZERO_POINT;
+	UKismetSystemLibrary::LineTraceSingle(this,
+		MuzzleLocation, MuzzleEndLocation,
+		ETraceTypeQuery::TraceTypeQuery1 /* == Visibility, 2 == Camera */, false,
+		IgnoreActors,
+		EDrawDebugTrace::ForOneFrame,
+		AimHitResult,
+		true
+	);
+
+	if (HitResult.bBlockingHit == false)
+		HitPoint = MuzzleEndLocation;
+	else
+		HitPoint = AimHitResult.ImpactPoint;
 }
 
 // Called when the game starts or when spawned
@@ -132,10 +186,5 @@ void ABaseWeapon::SetMesh(EWeaponName InWeaponName)
 void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FVector MuzzleLocation = Body->GetSocketLocation("MuzzleFlash");
-	TArray<AActor*> DefaultArray;
-	FHitResult r;
-	UKismetSystemLibrary::LineTraceSingle(this, MuzzleLocation, HitPoint, ETraceTypeQuery::TraceTypeQuery1, false, DefaultArray, EDrawDebugTrace::ForDuration, r, true);
 }
 

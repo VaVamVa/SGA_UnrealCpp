@@ -35,6 +35,8 @@ public:
 
 	virtual void Tick(float DeltaSecond) override;
 
+	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+
 protected:
 	virtual void BeginPlay() override;
 

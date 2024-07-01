@@ -38,9 +38,6 @@ AHero::AHero()
 void AHero::Tick(float DeltaSecond)
 {
 	Super::Tick(DeltaSecond);
-
-	if (ABaseWeapon* Weapon = GetEquippedWeapon())
-		Weapon->UpdateHitPoint();
 }
 
 void AHero::BeginPlay()

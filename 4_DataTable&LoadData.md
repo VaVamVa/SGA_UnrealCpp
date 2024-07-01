@@ -3,9 +3,9 @@
 ## 별도의 header만 존재하는 helper 소스 코드 생성 방법
 
 1. 유틸리티 및 함수 라이브러리 등 필요한 코드들이 따로 존재하는 파일 생성
-2. VS 모두 저장 후 종료
-3. UE editor에서 tool->VS 프로젝트 새로고침
-4. 새로 만든 Header에 `"CoreMinimal"` 인클루드
+2. 새로 만든 Header에 `"CoreMinimal"` 인클루드
+3. VS 모두 저장 후 종료
+4. UE editor에서 tool->VS 프로젝트 새로고침
 
 ## Data Table 만들기
 

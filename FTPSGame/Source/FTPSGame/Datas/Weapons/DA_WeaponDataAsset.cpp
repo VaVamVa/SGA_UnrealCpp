@@ -6,6 +6,7 @@
 #include "Actor/Weapon/BaseWeapon.h"
 #include "Actor/Character/BaseCharacter.h"
 
+
 UDA_WeaponDataAsset::UDA_WeaponDataAsset()
 {
 }
@@ -16,9 +17,9 @@ ABaseWeapon* UDA_WeaponDataAsset::CreateWeapon(ABaseCharacter* InOwner)
 	Parameters.Owner = InOwner;
 	
 	ABaseWeapon* OutWeapon = InOwner->GetWorld()->SpawnActor<ABaseWeapon>
-		(
+	(
 		WeaponClass, FVector(), FRotator(), Parameters
-		);
+	);
 
 	OutWeapon->GetMesh()->SetSimulatePhysics(false);
 	OutWeapon->GetMesh()->SetCollisionProfileName("NoCollision");
