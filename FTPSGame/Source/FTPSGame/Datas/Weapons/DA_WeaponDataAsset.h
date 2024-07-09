@@ -33,7 +33,7 @@ private:
 	float RoundPerMin = 60;  // 분당 발사 횟수
 
 	UPROPERTY(EditDefaultsOnly, Category = Property, meta = (AllowOrivateAccess = true, Bitmask, BitmaskEnum=EFireMode))
-	int32 AvailableFireMpodes = int32(EFireMode::Single);
+	uint32 AvailableFireModes = pow(2, static_cast<uint32>(EFireMode::Single));
 
 	UPROPERTY(EditDefaultsOnly, Category = Ammo, meta = (AllowOrivateAccess = true))
 	UStaticMesh* ShellMesh;
@@ -55,9 +55,10 @@ public:
 	FORCEINLINE FName GetHandleSocketName(bool bRightHandle = true) { return bRightHandle ? RightHandleSocketName : LeftHandleSocketName; }
 
 	FORCEINLINE float GetRPM() const { return RoundPerMin; }
-	FORCEINLINE UStaticMesh* GetSehllMesh() const { return ShellMesh; }
+	FORCEINLINE UStaticMesh* GetShellMesh() const { return ShellMesh; }
 	FORCEINLINE UStaticMesh* GetMagazineMesh() const { return MagazineMesh; }
 	FORCEINLINE int32 GetMaxRonud() const { return MaxRound; }
 	FORCEINLINE int32 GetMaxMagazine() const { return MaxMagazine; }
-	FORCEINLINE int32 GetAvailableFireModes() const { return AvailableFireMpodes; }
+	FORCEINLINE int32 GetAvailableFireModes() const { return AvailableFireModes; }
+	
 };

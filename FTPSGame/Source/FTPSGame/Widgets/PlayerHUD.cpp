@@ -4,9 +4,10 @@
 #include "Widgets/PlayerHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Actor/Character/Hero/Hero.h"
+#include "Camera/CameraComponent.h"
 
-#include "Widgets/CrossHair/CrossHair.h"
-#include "Widgets/CrossHair/AimCircle.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Utilities/Helper.h"
 
@@ -16,6 +17,7 @@ APlayerHUD::APlayerHUD()
 
 	CrossHairClass = Helper::GetClassFromConstructor<UUserWidget>("/Game/Widgets/CrossHair/WB_CrossHair");
 	AimCircleClass = Helper::GetClassFromConstructor<UUserWidget>("/Game/Widgets/CrossHair/WB_AimCircle");
+	AmmoInfoClass = Helper::GetClassFromConstructor<UUserWidget>("/Game/Widgets/AmmoInfo/WB_AmmoInfo");
 }
 
 void APlayerHUD::BeginPlay()
@@ -31,6 +33,10 @@ void APlayerHUD::BeginPlay()
 	AimCircle = CreateWidget<UAimCircle>(Hero->GetWorld(), AimCircleClass);
 	AimCircle->AddToViewport();
 	AimCircle->SetVisibility(ESlateVisibility::Visible);
+
+	AmmoInfo = CreateWidget<UAmmoInfo>(Hero->GetWorld(), AmmoInfoClass);
+	AmmoInfo->AddToViewport();
+	AmmoInfo->SetVisibility(ESlateVisibility::Visible);
 }
 
 void APlayerHUD::Tick(float Delta)
@@ -38,4 +44,15 @@ void APlayerHUD::Tick(float Delta)
 	Super::Tick(Delta);
 
 	AimCircle->UpdateCirclePosition(Hero->GetEquippedWeapon());
+
+	// AmmoInfo UI Position
+	{
+		FVector WidgetWorldLocation = Hero->GetMesh()->GetBoneLocation("hand_l");
+		WidgetWorldLocation += Hero->GetCamera()->GetRightVector() * 100;
+
+		FVector2D NewPosition;
+		UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(UGameplayStatics::GetPlayerController(GetWorld(), 0), WidgetWorldLocation, NewPosition, true);
+
+		AmmoInfo->UpdatePosition(NewPosition);
+	}
 }

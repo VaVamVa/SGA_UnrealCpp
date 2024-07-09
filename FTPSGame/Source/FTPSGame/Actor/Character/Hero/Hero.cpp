@@ -10,6 +10,8 @@
 
 #include "Actor/Weapon/BaseWeapon.h"
 
+#include "Widgets/PlayerHUD.h"
+
 
 AHero::AHero()
 {
@@ -46,6 +48,16 @@ void AHero::BeginPlay()
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
+		if (APlayerHUD* hud = Cast<APlayerHUD>(PlayerController->GetHUD()))
+		{
+			PlayerHUD = hud;
+		}
+	}
+
+	BindWeaponAmmoDelegate();
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 		if (Subsystem)
 		{
@@ -57,6 +69,7 @@ void AHero::BeginPlay()
 				Subsystem->AddMappingContext(InputDataAsset->CombatInputMapping.InputMappingContext, 0);
 		}
 	}
+
 }
 
 
@@ -108,6 +121,19 @@ void AHero::SetCombatInputMapping(UEnhancedInputComponent* EnhancedPlayerInputCo
 		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Ongoing, this, &ABaseCharacter::StartAiming);
 		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &ABaseCharacter::EndAiming);
 	}
+
+	Action = *InputDataAsset->CombatInputMapping.InputActionMap.Find(ECombatInputAction::Fire);
+	if (Action)
+	{
+		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Started, this, &ABaseCharacter::Fire);
+		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Completed, this, &ABaseCharacter::HoldFire);
+	}
+
+	Action = *InputDataAsset->CombatInputMapping.InputActionMap.Find(ECombatInputAction::SwitchFireMode);
+	if (Action)
+	{
+		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &ABaseCharacter::SwitchFireMode);
+	}
 }
 
 void AHero::Move(const FInputActionValue& Value)
@@ -144,4 +170,22 @@ void AHero::View(const FInputActionValue& Value)
 	
 }
 
+void AHero::BindWeaponAmmoDelegate()
+{
+	//GEngine->AddOnScreenDebugMessage(122, 3, FColor::Black, "Hero::SwapWeapon Binding AmmoUpdate to AmmoInfo");
+	EquippedWeapon->AmmoUpdate.AddDynamic(PlayerHUD->GetAmmoInfo(), &UAmmoInfo::Update);
+	EquippedWeapon->AmmoUpdate.Broadcast(EquippedWeapon->GetCurrentAmmo(), EquippedWeapon->GetCurrentMag());
+	EquippedWeapon->UpdateTextFromTextRenderComp();
+}
+
 #pragma endregion InputMapping
+
+bool AHero::SwapWeapon(ESlot InSlot)
+{
+	EquippedWeapon->AmmoUpdate.Clear();
+	//GEngine->AddOnScreenDebugMessage(122, 3, FColor::Black, "Hero::SwapWeapon");
+	if (!Super::SwapWeapon(InSlot)) return false;
+
+	BindWeaponAmmoDelegate();
+	return true;
+}

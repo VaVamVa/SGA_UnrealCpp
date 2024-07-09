@@ -28,10 +28,12 @@ enum class EWeaponItemType
 	Equipped
 };
 
-UENUM(Blueprintable)
+UENUM(Blueprintable, meta=(Bitflags))
 enum class EFireMode : uint8
 {
+	None					UMETA(Hidden),
 	Single,
 	Burst,
-	Auto
+	Auto,
+	End						UMETA(Hidden)
 };

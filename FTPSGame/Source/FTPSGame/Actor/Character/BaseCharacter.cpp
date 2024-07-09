@@ -80,6 +80,8 @@ void ABaseCharacter::BeginPlay()
 		EquippedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponAsset->GetHandleSocketName());
 	}
+
+
 }
 
 void ABaseCharacter::SwapMainSlotWeapon()
@@ -102,9 +104,9 @@ void ABaseCharacter::EndAiming_Implementation()
 	bAiming = false;
 }
 
-void ABaseCharacter::SwapWeapon(ESlot InSlot)
+bool ABaseCharacter::SwapWeapon(ESlot InSlot)
 {
-	if (bSwapping == true) return;
+	if (bSwapping == true) return false;
 	bSwapping = true;
 	bMirrorPlaying = false;
 
@@ -146,7 +148,11 @@ void ABaseCharacter::SwapWeapon(ESlot InSlot)
 		InSlot == ESlot::Main ?
 			Backpack->SetMainSlot(SelectedWeapon->GetData(), SelectedWeapon) :
 			Backpack->SetSubSlot(SelectedWeapon->GetData(), SelectedWeapon);
+		
+		return true;
 	}
+
+	return false;
 }
 
 // Called every frame
@@ -213,6 +219,23 @@ void ABaseCharacter::EndSwapping()
 {
 	bSwapping = false;
 	bMirrorPlaying = false;
+}
+
+void ABaseCharacter::SwitchFireMode()
+{
+	EquippedWeapon->SwitchFireMode();
+}
+
+void ABaseCharacter::Fire()
+{
+	EquippedWeapon->PullTrigger();
+	//GEngine->AddOnScreenDebugMessage(1244, 0.5f, FColor::Red, "Fire");
+}
+
+void ABaseCharacter::HoldFire()
+{
+	EquippedWeapon->ReleaseTrigger();
+	//GEngine->AddOnScreenDebugMessage(1244, 0.5f, FColor::Red, "Hold");
 }
 
 void ABaseCharacter::CreateSkeletalMeshComponents()

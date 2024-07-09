@@ -16,4 +16,6 @@ class FTPSGAME_API ARifle_M4C : public ABaseWeapon
 	
 public:
 	ARifle_M4C();
+
+	virtual void PullTrigger() override;
 };

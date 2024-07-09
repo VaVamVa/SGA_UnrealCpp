@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "PlayerHUD.generated.h"
 
+#include "Widgets/CrossHair/CrossHair.h"
+#include "Widgets/CrossHair/AimCircle.h"
+#include "Widgets/AmmoInfo/AmmoInfo.h"
+
+#include "PlayerHUD.generated.h"
 /**
  * 
  */
@@ -13,6 +17,7 @@
 class AHero;
 class UCrossHair;
 class UAimCircle;
+class UAmmoInfo;
 
 UCLASS()
 class FTPSGAME_API APlayerHUD : public AHUD
@@ -28,8 +33,12 @@ class FTPSGAME_API APlayerHUD : public AHUD
 	UPROPERTY()
 	UAimCircle* AimCircle;
 
+	UPROPERTY()
+	UAmmoInfo* AmmoInfo;
+
 	UClass* CrossHairClass;
 	UClass* AimCircleClass;
+	UClass* AmmoInfoClass;
 
 public:
 	APlayerHUD();
@@ -37,4 +46,5 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float Delta) override;
 
+	FORCEINLINE UAmmoInfo* GetAmmoInfo() { return AmmoInfo; }
 };

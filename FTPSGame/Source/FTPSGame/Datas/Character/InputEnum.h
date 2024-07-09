@@ -17,5 +17,7 @@ enum class ECombatInputAction
 	Interact,
 	MainSlot,
 	SubSlot,
-	Aim
+	Aim,
+	Fire,
+	SwitchFireMode
 };

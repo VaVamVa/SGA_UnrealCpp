@@ -35,14 +35,20 @@ class FTPSGAME_API UWeapon_AnimInstance : public UAnimInstance
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	EFireMode FireMode;
 
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	// Fire를 False로 바꾸는 부분은 블프에서 구현
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bFire;
 
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	// 위와 동일한 경우
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool bChamberEmpty;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	int32 BulletCounter;
 
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSecond) override;
+	void PreUpdateLinkedInstances(float DeltaSecond) override;
 };

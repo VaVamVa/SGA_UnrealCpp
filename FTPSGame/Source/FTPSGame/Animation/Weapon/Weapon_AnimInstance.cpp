@@ -22,18 +22,22 @@ void UWeapon_AnimInstance::NativeBeginPlay()
 
 
 	float RPM = OwnerWeapon->GetData()->GetRPM();
+	float AnimLength = 0.0f;  // format : sec
+	float DefaultAnimPlayRate = 0.0f;  // format : play rate(speed)
 
 	if (SingleFireAnim)
 	{
-		float AnimLength = SingleFireAnim->GetPlayLength();
-		SinglePlayRate = RPM / 60.0f / AnimLength;
+		AnimLength = SingleFireAnim->GetPlayLength();
+		DefaultAnimPlayRate = SingleFireAnim->RateScale;
+		SinglePlayRate = RPM / 60.0f * AnimLength / DefaultAnimPlayRate;
 	}
 	else SinglePlayRate = 1.0f;
 
 	if (AutoFireAnim)
 	{
-		float AnimLength = AutoFireAnim->GetPlayLength();
-		AutoPlayRate = RPM / 60.0f / AnimLength;
+		AnimLength = AutoFireAnim->GetPlayLength();
+		DefaultAnimPlayRate = AutoFireAnim->RateScale;
+		AutoPlayRate = RPM / 60.0f * AnimLength / DefaultAnimPlayRate;
 	}
 	else AutoPlayRate = 1.0f;
 }
@@ -47,7 +51,15 @@ void UWeapon_AnimInstance::NativeUpdateAnimation(float DeltaSecond)
 	FireMode = OwnerWeapon->GetCurrentFireMode();
 	bFire = OwnerWeapon->IsFire();
 	bChamberEmpty = OwnerWeapon->IsChamberEmpty();
+	BulletCounter = OwnerWeapon->GetBulletCounter();
 
 
+}
+
+void UWeapon_AnimInstance::PreUpdateLinkedInstances(float DeltaSecond)
+{
+	Super::PreUpdateLinkedInstances(DeltaSecond);
+
+	
 }
 

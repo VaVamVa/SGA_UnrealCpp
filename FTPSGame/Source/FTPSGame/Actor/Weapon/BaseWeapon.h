@@ -12,28 +12,41 @@
 
 class UArrowComponent;
 class UDA_WeaponDataAsset;
+class UTextRenderComponent;
+class ABaseCharacter;
 
 #include "BaseWeapon.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAmmoUpdate, int32, Ammo, int32, Magazine);
 
 UCLASS()
 class FTPSGAME_API ABaseWeapon : public AActor, public IInteract
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<USkeletalMeshComponent> Body;
 
-	bool bFire;
-	bool bChamberEmpty;
+	bool bFire = false;
+	bool bChamberEmpty = false;
 	EFireMode FireMode = EFireMode::Single;
+	
+	int32 BulletCounter = 0;
+	int32 CurrentAmmo;
+	int32 CurrentMag;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UTextRenderComponent> TextRenderComp;
+
+	UMaterialInstanceDynamic* DynMaterial;
+
+	UPROPERTY()
+	TObjectPtr<ABaseCharacter> EquippedCharacter;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<UDA_WeaponDataAsset> DataAsset;
 
-public:
-	//UPROPERTY(VisibleDefaultsOnly)
-	//TObjectPtr<UArrowComponent> ArrowComp;
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<USkeletalMeshComponent> Body;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -60,14 +73,42 @@ public:
 
 	void ConversionItemType(EWeaponItemType InType, USceneComponent* InParentComponent = nullptr, FName InSocketName = "");
 
+	void SwitchFireMode();
+
 	FORCEINLINE bool IsFire() const { return bFire; }
 	FORCEINLINE bool IsChamberEmpty() const { return bChamberEmpty; }
+	FORCEINLINE uint8 GetBulletCounter() const { return BulletCounter; }
 	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return Body; }
 	FORCEINLINE UDA_WeaponDataAsset* GetData() const { return DataAsset; }
 	FORCEINLINE FVector GetHitPoint() const { return HitPoint; }
 	FORCEINLINE EFireMode GetCurrentFireMode() const { return FireMode; }
+	FORCEINLINE int32 GetCurrentAmmo() const { return CurrentAmmo; }
+	FORCEINLINE int32 GetCurrentMag() const { return CurrentMag; }
 
 	void UpdateHitPoint(float DeltaSecond);
+	
+	virtual void PullTrigger();
+	virtual void ReleaseTrigger();
+
+	FAmmoUpdate AmmoUpdate;
+
+	void UpdateTextFromTextRenderComp();
+
+public:  // Notify
+	UFUNCTION()
+	void SpawnProjectile();
+
+	UFUNCTION()
+	void CheckChamber();
+
+	UFUNCTION()
+	void InitializeWeaponState();
+
+	UFUNCTION()
+	void SetAmmoTextRender(bool Aiming);
 
 protected:
+	UFUNCTION()
+	virtual void SpawnShell();
+
 };

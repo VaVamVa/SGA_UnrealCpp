@@ -66,8 +66,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = true))
 	UDA_WeaponDataAsset* WeaponAsset;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	ABaseWeapon* EquippedWeapon;
+	
 
 	// Anim Montage
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = true))
@@ -88,8 +87,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
 
 
 public:	
@@ -123,10 +120,20 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void EndAiming();
 
+	virtual void SwitchFireMode();
+	virtual void Fire();
+	virtual void HoldFire();
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	ABaseWeapon* EquippedWeapon;
+
+	enum ESlot { Main, Sub };
+	virtual bool SwapWeapon(ESlot InSlot);
+
 private:
 	void CreateSkeletalMeshComponents();
 
-	enum ESlot { Main, Sub };
-	void SwapWeapon(ESlot InSlot);
+	
 };
 

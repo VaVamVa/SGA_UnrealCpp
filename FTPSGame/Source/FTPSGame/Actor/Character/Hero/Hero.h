@@ -6,9 +6,12 @@
 class USpringArmComponent;
 class UCameraComponent;
 
+class APlayerHUD;
+
 class UDA_InputMappingDataAsset;
 class UEnhancedInputComponent;
 struct FInputActionValue;
+
 #include "Datas/Character/InputStruct.h"
 
 #include "Hero.generated.h"
@@ -29,6 +32,9 @@ class FTPSGAME_API AHero : public ABaseCharacter
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess=true))
 	TObjectPtr<UDA_InputMappingDataAsset> InputDataAsset;
 
+	UPROPERTY()
+	TObjectPtr<APlayerHUD> PlayerHUD;
+
 	
 public:
 	AHero();
@@ -36,6 +42,7 @@ public:
 	virtual void Tick(float DeltaSecond) override;
 
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+	FORCEINLINE APlayerHUD* GetHUD() const{ return PlayerHUD; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,4 +55,9 @@ private:
 
 	void Move(const FInputActionValue& Value);
 	void View(const FInputActionValue& Value);
+
+	void BindWeaponAmmoDelegate();
+
+protected:
+	bool SwapWeapon(ESlot InSlot) override;
 };
