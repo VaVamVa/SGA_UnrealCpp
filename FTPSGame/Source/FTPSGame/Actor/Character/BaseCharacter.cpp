@@ -46,6 +46,9 @@ ABaseCharacter::ABaseCharacter()
 	Asset = SkeletalMeshData->FindRow<FEquipmentMeshAsset>(FName("Head"), ""/*log msg*/);
 	if (Asset) Head->SetSkeletalMesh(Asset->SkeletalMesh[0]);
 
+	MagazineMesh = Helper::CreateSceneComponent<UStaticMeshComponent>(this, "MagazineMesh", GetMesh());
+	MagazineMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, "Magazine");
+	MagazineMesh->SetVisibility(false);
 
 	// Motages Setting
 	{
@@ -81,7 +84,7 @@ void ABaseCharacter::BeginPlay()
 		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponAsset->GetHandleSocketName());
 	}
 
-
+	SetMagazineMesh();
 }
 
 void ABaseCharacter::SwapMainSlotWeapon()
@@ -97,11 +100,13 @@ void ABaseCharacter::SwapSubSlotWeapon()
 void ABaseCharacter::StartAiming_Implementation()
 {
 	bAiming = true;
+	EquippedWeapon->SwitchAmmoTextRender(bAiming);
 }
 
 void ABaseCharacter::EndAiming_Implementation()
 {
 	bAiming = false;
+	EquippedWeapon->SwitchAmmoTextRender(bAiming);
 }
 
 bool ABaseCharacter::SwapWeapon(ESlot InSlot)
@@ -137,7 +142,7 @@ bool ABaseCharacter::SwapWeapon(ESlot InSlot)
 
 	if (SelectedWeapon != nullptr)
 	{
-		PlayCustommMontage("Swapping", 1.0f, bAiming, bMirrorPlaying);  // false == HipFire
+		PlayCustomMontage("Swapping", 1.0f, bAiming, bMirrorPlaying);  // false == HipFire
 
 		EquippedWeapon->ConversionItemType(EWeaponItemType::Equipped, Backpack->GetMesh(), SocketName);
 		SelectedWeapon->ConversionItemType(EWeaponItemType::Equipped, GetMesh(), SelectedWeapon->GetData()->GetHandleSocketName());
@@ -149,10 +154,17 @@ bool ABaseCharacter::SwapWeapon(ESlot InSlot)
 			Backpack->SetMainSlot(SelectedWeapon->GetData(), SelectedWeapon) :
 			Backpack->SetSubSlot(SelectedWeapon->GetData(), SelectedWeapon);
 		
+		SetMagazineMesh();
+
 		return true;
 	}
 
 	return false;
+}
+
+void ABaseCharacter::SetMagazineMesh()
+{
+	MagazineMesh->SetStaticMesh(EquippedWeapon->GetData()->GetMagazineMesh());
 }
 
 // Called every frame
@@ -163,7 +175,8 @@ void ABaseCharacter::Tick(float DeltaTime)
 	//GEngine->AddOnScreenDebugMessage(125, 0.2, FColor::Blue, FString("Cur Mirror : ") + (bMirrorPlaying ? "True" : "False"));
 
 	if (ABaseWeapon* Weapon = GetEquippedWeapon())
-		Weapon->UpdateHitPoint(DeltaTime);
+		if (!bDoSomethingCantCombatAction)
+			Weapon->UpdateHitPoint(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -207,7 +220,7 @@ void ABaseCharacter::Interact()
 		Object->Interact(this);
 }
 
-void ABaseCharacter::PlayCustommMontage(FString Key, float PlayRate, int32 CustomIndex, bool InMirrorPlaying)
+void ABaseCharacter::PlayCustomMontage(FString Key, float PlayRate, int32 CustomIndex, bool InMirrorPlaying)
 {
 	UAnimMontage* Montage = AnimMontageMap.Find(Key)->Montages[CustomIndex];
 
@@ -219,6 +232,7 @@ void ABaseCharacter::EndSwapping()
 {
 	bSwapping = false;
 	bMirrorPlaying = false;
+	bDoSomethingCantCombatAction = false;
 }
 
 void ABaseCharacter::SwitchFireMode()
@@ -236,6 +250,27 @@ void ABaseCharacter::HoldFire()
 {
 	EquippedWeapon->ReleaseTrigger();
 	//GEngine->AddOnScreenDebugMessage(1244, 0.5f, FColor::Red, "Hold");
+}
+
+void ABaseCharacter::SetAttatchRifle(bool bIsRightHand)
+{
+	EquippedWeapon->AttachToComponent(
+		GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
+		EquippedWeapon->GetData()->GetHandleSocketName(bIsRightHand)
+	);
+	bDoSomethingCantCombatAction = !bIsRightHand;
+}
+
+void ABaseCharacter::SetVisibleMagazine(bool bVisible)
+{
+	MagazineMesh->SetVisibility(bVisible);
+}
+
+void ABaseCharacter::StartReload()
+{
+	if (EquippedWeapon->GetCurrentMag() <= 0) return;
+	if (bDoSomethingCantCombatAction) return;
+	PlayCustomMontage("Reloading", 1);
 }
 
 void ABaseCharacter::CreateSkeletalMeshComponents()

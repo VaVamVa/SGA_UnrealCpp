@@ -48,6 +48,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	TObjectPtr<USkeletalMeshComponent> Body;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> Magazine;
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	FString RowName;
@@ -93,6 +96,15 @@ public:
 	FAmmoUpdate AmmoUpdate;
 
 	void UpdateTextFromTextRenderComp();
+	
+	enum TEXT_COLOR
+	{
+		Blue, Yellow, Red, Max
+	};
+	FVector TextColors[TEXT_COLOR::Max] =
+	{
+		FVector(0, 5, 15), FVector(10, 10, 0), FVector(20, 0, 0)
+	};
 
 public:  // Notify
 	UFUNCTION()
@@ -105,10 +117,17 @@ public:  // Notify
 	void InitializeWeaponState();
 
 	UFUNCTION()
-	void SetAmmoTextRender(bool Aiming);
+	void SwitchAmmoTextRender(bool Aiming);
+
+	// Reload
+	UFUNCTION()
+	void SwapMagazine(bool bBeingSwap);
+
 
 protected:
 	UFUNCTION()
 	virtual void SpawnShell();
 
+	UFUNCTION()
+	void SpawnDropMagazine();
 };

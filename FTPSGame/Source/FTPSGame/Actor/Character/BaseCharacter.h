@@ -66,11 +66,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = Weapon, meta = (AllowPrivateAccess = true))
 	UDA_WeaponDataAsset* WeaponAsset;
 
-	
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> MagazineMesh;
 
 	// Anim Montage
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = true))
 	TMap<FString, FAnimMontageArray> AnimMontageMap;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	bool bDoSomethingCantCombatAction = false;
 
 	// Aiming
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -100,7 +104,7 @@ public:
 
 	virtual void Interact();
 
-	void PlayCustommMontage(FString Key, float PlayRate = 1.0f, int32 CustomIndex = 0, bool InMirrorPlaying = false);
+	void PlayCustomMontage(FString Key, float PlayRate = 1.0f, int32 CustomIndex = 0, bool InMirrorPlaying = false);
 
 	FORCEINLINE bool IsAiming() { return bAiming; }
 	FORCEINLINE ABaseWeapon* GetEquippedWeapon() { return EquippedWeapon; }
@@ -124,12 +128,22 @@ public:
 	virtual void Fire();
 	virtual void HoldFire();
 
+	UFUNCTION()
+	void SetAttatchRifle(bool bIsRightHand);
+
+	UFUNCTION()
+	void SetVisibleMagazine(bool bVisible);
+
+	virtual void StartReload();
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	ABaseWeapon* EquippedWeapon;
 
 	enum ESlot { Main, Sub };
 	virtual bool SwapWeapon(ESlot InSlot);
+
+	void SetMagazineMesh();
 
 private:
 	void CreateSkeletalMeshComponents();

@@ -19,5 +19,6 @@ enum class ECombatInputAction
 	SubSlot,
 	Aim,
 	Fire,
-	SwitchFireMode
+	SwitchFireMode,
+	Reload
 };

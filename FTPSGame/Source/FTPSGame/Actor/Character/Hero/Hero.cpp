@@ -134,6 +134,12 @@ void AHero::SetCombatInputMapping(UEnhancedInputComponent* EnhancedPlayerInputCo
 	{
 		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &ABaseCharacter::SwitchFireMode);
 	}
+
+	Action = *InputDataAsset->CombatInputMapping.InputActionMap.Find(ECombatInputAction::Reload);
+	if (Action)
+	{
+		EnhancedPlayerInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &ABaseCharacter::StartReload);
+	}
 }
 
 void AHero::Move(const FInputActionValue& Value)

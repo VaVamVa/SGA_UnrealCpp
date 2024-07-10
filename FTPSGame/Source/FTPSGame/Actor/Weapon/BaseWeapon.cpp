@@ -40,15 +40,21 @@ ABaseWeapon::ABaseWeapon()
 	//Body->SetSimulatePhysics(false);
 	Body->SetCollisionProfileName("InteractObject");
 
+	Magazine = Helper::CreateSceneComponent<UStaticMeshComponent>(this, "Magazine", Body);
+	Magazine->AttachToComponent(Body, FAttachmentTransformRules::KeepRelativeTransform, "Magazine");
+	Magazine->SetCollisionProfileName("NoCollision");
+	
+
 	DataAsset = Helper::GetAssetFromConstructor<UDA_WeaponDataAsset>("");
 
-	{
-		UMaterialInterface* TextMaterial = Helper::GetAssetFromConstructor<UMaterialInterface>("/Game/Widgets/AmmoInfo/GlowTextMaterial");
-		
+	{		
 		TextRenderComp = Helper::CreateSceneComponent<UTextRenderComponent>(this, "TextRender", Body);
+		TextRenderComp->AttachToComponent(Body, FAttachmentTransformRules::KeepRelativeTransform, "MuzzleFlash");
 		TextRenderComp->SetVisibility(false);
-		TextRenderComp->SetTextMaterial(TextMaterial);
 		TextRenderComp->SetRelativeRotation(FRotator(0, 180, 0));
+
+		UMaterialInterface* TextMaterial = Helper::GetAssetFromConstructor<UMaterialInterface>("/Game/Widgets/AmmoInfo/GlowTextMaterial");
+		TextRenderComp->SetTextMaterial(TextMaterial);
 	}
 
 	/*
@@ -65,15 +71,16 @@ void ABaseWeapon::BeginPlay()
 	CurrentAmmo = DataAsset->GetMaxRonud();
 	CurrentMag = DataAsset->GetMaxMagazine();
 
+	if (DataAsset->GetMagazineMesh())
+	{
+		Magazine->SetStaticMesh(DataAsset->GetMagazineMesh());
+	}
+
 	{
 		//create dynamic material anywhere u like, Constructor or anywhere .
 		DynMaterial = UMaterialInstanceDynamic::Create(TextRenderComp->TextMaterial, this);
+		UpdateTextFromTextRenderComp();
 	}
-
-	//if (ABaseCharacter* TmpOwner = Cast<ABaseCharacter>(GetOwner()))
-	//{
-	//	EquippedCharacter = TmpOwner;
-	//}
 }
 
 void ABaseWeapon::Interact(ABaseCharacter* InCharacter)
@@ -96,7 +103,7 @@ void ABaseWeapon::Interact(ABaseCharacter* InCharacter)
 
 	Cast<UCharacter_AnimInstance>(InCharacter->GetMesh()->GetAnimInstance())->SetInteractTargetLocation(GetActorLocation());
 	InCharacter->SetMirror(false);
-	InCharacter->PlayCustommMontage(Key, 1.5f, CustomIndex);
+	InCharacter->PlayCustomMontage(Key, 1.5f, CustomIndex);
 
 	InCharacter->PickUpWeapon(this);
 }
@@ -133,11 +140,6 @@ void ABaseWeapon::ConversionItemType(EWeaponItemType InType, USceneComponent* In
 		Body->SetRelativeLocationAndRotation(FVector(0, 0, 0), FRotator(0, 0, 0));
 
 		SetOwner(InParentComponent->GetOwner());
-
-		//if (InSocketName == "MainWeapon")
-		//	EquippedCharacter = Cast<ABaseCharacter>(InParentComponent->GetOwner());
-		//else
-		//	EquippedCharacter = nullptr;
 
 		break;
 	}
@@ -256,21 +258,13 @@ void ABaseWeapon::UpdateTextFromTextRenderComp()
 	GEngine->AddOnScreenDebugMessage(1344, 1, FColor::Green, (TextRenderComp->Text).ToString());
 
 	if (CurrentAmmo <= 0)
-	{
-		DynMaterial->SetVectorParameterValue("GlowColor", FVector(20.0, 0.0, 0.0));
-		TextRenderComp->SetTextMaterial(DynMaterial);
-	}
+		DynMaterial->SetVectorParameterValue("GlowColor", TextColors[TEXT_COLOR::Red]);
 	else if (CurrentAmmo <= DataAsset->GetMaxRonud() * 0.5f)
-	{
-		DynMaterial->SetVectorParameterValue("GlowColor", FVector(20.0, 10.0, 0.0));
-		TextRenderComp->SetTextMaterial(DynMaterial);
-		//TextRenderComp->SetMaterial(0, DynMaterial);
-	}
+		DynMaterial->SetVectorParameterValue("GlowColor", TextColors[TEXT_COLOR::Yellow]);
 	else
-	{
-		DynMaterial->SetVectorParameterValue("GlowColor", FVector(0.0, 5.0, 20.0));
-		TextRenderComp->SetTextMaterial(DynMaterial);
-	}
+		DynMaterial->SetVectorParameterValue("GlowColor", TextColors[TEXT_COLOR::Blue]);
+
+	TextRenderComp->SetTextMaterial(DynMaterial);
 }
 
 void ABaseWeapon::SpawnProjectile()
@@ -286,8 +280,6 @@ void ABaseWeapon::SpawnProjectile()
 	//}
 	if (CurrentAmmo <= 0 || bFire == false) return;
 
-
-
 	FTransform Transform = Body->GetSocketTransform("MuzzleFlash");
 	FActorSpawnParameters Parameters;
 	{
@@ -298,6 +290,7 @@ void ABaseWeapon::SpawnProjectile()
 	BulletCounter++;
 	CurrentAmmo--;
 	if (AmmoUpdate.IsBound()) AmmoUpdate.Broadcast(CurrentAmmo, CurrentMag);
+	//UpdateTextFromTextRenderComp();
 	//else GEngine->AddOnScreenDebugMessage(12, 3, FColor::Black, "Not Bound AmmoUpdate Delegate");
 }
 
@@ -326,9 +319,48 @@ void ABaseWeapon::InitializeWeaponState()
 	bFire = false;
 }
 
-void ABaseWeapon::SetAmmoTextRender(bool Aiming)
+void ABaseWeapon::SwitchAmmoTextRender(bool Aiming)
 {
 	TextRenderComp->SetVisibility(Aiming);
+	UpdateTextFromTextRenderComp();
+}
+
+void ABaseWeapon::SwapMagazine(bool bBeingSwap)
+{
+	Magazine->SetVisibility(!bBeingSwap);
+
+	if (bBeingSwap)
+	{
+		CurrentAmmo = 0;
+		SpawnDropMagazine();
+	}
+	else
+	{
+		CurrentAmmo = DataAsset->GetMaxRonud();
+		CurrentMag--;
+		
+	}
+
+	if (AmmoUpdate.IsBound()) AmmoUpdate.Broadcast(CurrentAmmo, CurrentMag);
+}
+
+void ABaseWeapon::SpawnDropMagazine()
+{
+	if (DataAsset->GetMagazineMesh() == nullptr) return;
+
+	FTransform Transform = Body->GetSocketTransform("Magazine");
+	FRotator Rotation = UKismetMathLibrary::Quat_Rotator(Transform.GetRotation());
+
+	AStaticMeshActor* DropMagazine = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), Transform.GetLocation(), Rotation);
+	DropMagazine->SetMobility(EComponentMobility::Movable);
+	DropMagazine->GetStaticMeshComponent()->SetSimulatePhysics(true);
+	DropMagazine->GetStaticMeshComponent()->SetStaticMesh(DataAsset->GetMagazineMesh());
+	DropMagazine->GetStaticMeshComponent()->SetCollisionProfileName("ShellProfile");
+
+	FVector Force = -DropMagazine->GetActorUpVector() * 50;
+	DropMagazine->GetStaticMeshComponent()->AddForce(Force);
+
+	DropMagazine->SetLifeSpan(8);
 }
 
 void ABaseWeapon::SpawnShell()
@@ -364,20 +396,9 @@ void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ABaseCharacter* TmpOwner = Cast<ABaseCharacter>(GetOwner());
+	//ABaseCharacter* TmpOwner = Cast<ABaseCharacter>(GetOwner());
 
-	if (TmpOwner == nullptr) return;
+	//if (TmpOwner == nullptr) return;
 
-	EquippedCharacter = TmpOwner;
-	if (EquippedCharacter->IsAiming())
-	{
-		TextRenderComp->SetWorldLocation(Body->GetSocketLocation("MuzzleFlash"));
-		UpdateTextFromTextRenderComp();
-		TextRenderComp->SetVisibility(true);
-	}
-	else
-	{
-		TextRenderComp->SetVisibility(false);
-	}
 }
 
