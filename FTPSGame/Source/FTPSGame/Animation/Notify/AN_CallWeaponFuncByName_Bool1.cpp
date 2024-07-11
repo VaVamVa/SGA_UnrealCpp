@@ -18,14 +18,11 @@ void UAN_CallWeaponFuncByName_Bool1::Notify(USkeletalMeshComponent* MeshComp, UA
 {
 	Super::Notify(MeshComp, Animation, EventRef);
 
-	ABaseWeapon* Weapon = nullptr;
-	ABaseCharacter* Character = Cast<ABaseCharacter>(MeshComp->GetOwner());
-	if (Character && Character->GetEquippedWeapon())
-		Weapon = Character->GetEquippedWeapon();
-	else
-		Weapon = Cast<ABaseWeapon>(MeshComp->GetOwner());
+	ABaseWeapon* Weapon = Weapon = Cast<ABaseWeapon>(MeshComp->GetOwner());
+	if (Weapon == nullptr)
+		Weapon = Cast<ABaseCharacter>(MeshComp->GetOwner())->GetEquippedWeapon();
 
-	if (Weapon != nullptr)
+	if (Weapon->IsValidLowLevelFast())
 	{
 		if (UFunction* Func = Weapon->FindFunction(FName(FunctionName)))
 		{

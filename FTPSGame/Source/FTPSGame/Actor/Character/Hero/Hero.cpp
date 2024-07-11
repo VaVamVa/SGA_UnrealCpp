@@ -10,7 +10,6 @@
 
 #include "Actor/Weapon/BaseWeapon.h"
 
-#include "Widgets/PlayerHUD.h"
 
 
 AHero::AHero()
@@ -54,15 +53,13 @@ void AHero::BeginPlay()
 		}
 	}
 
-	BindWeaponAmmoDelegate();
+	if (EquippedWeapon->IsValidLowLevelFast()) EquippedWeapon->BindAmmoUpdateDelegate(this);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 		if (Subsystem)
 		{
-			//GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Blue, "Subsystem");
-
 			if (InputDataAsset->GeneralInputMapping.InputMappingContext)
 				Subsystem->AddMappingContext(InputDataAsset->GeneralInputMapping.InputMappingContext, 0);
 			if (InputDataAsset->CombatInputMapping.InputMappingContext)
@@ -83,7 +80,6 @@ void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	if (!EnhancedPlayerInputComponent) return;
 
-	//GEngine->AddOnScreenDebugMessage(2, 3.0f, FColor::Blue, "Setting Input Mapping Context");
 
 	SetGeneralInputMapping(EnhancedPlayerInputComponent);
 	SetCombatInputMapping(EnhancedPlayerInputComponent);
@@ -148,8 +144,6 @@ void AHero::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		//GEngine->AddOnScreenDebugMessage(3, 3.0f, FColor::Blue, "Set Movement input");
-
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -168,30 +162,17 @@ void AHero::View(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		//GEngine->AddOnScreenDebugMessage(4, 3.0f, FColor::Blue, "Set Controller yaw input");
-
 		AddControllerYawInput(InputValue.X);
 		AddControllerPitchInput(InputValue.Y);
 	}
 	
 }
 
-void AHero::BindWeaponAmmoDelegate()
-{
-	//GEngine->AddOnScreenDebugMessage(122, 3, FColor::Black, "Hero::SwapWeapon Binding AmmoUpdate to AmmoInfo");
-	EquippedWeapon->AmmoUpdate.AddDynamic(PlayerHUD->GetAmmoInfo(), &UAmmoInfo::Update);
-	EquippedWeapon->AmmoUpdate.Broadcast(EquippedWeapon->GetCurrentAmmo(), EquippedWeapon->GetCurrentMag());
-	EquippedWeapon->UpdateTextFromTextRenderComp();
-}
-
 #pragma endregion InputMapping
 
 bool AHero::SwapWeapon(ESlot InSlot)
 {
-	EquippedWeapon->AmmoUpdate.Clear();
-	//GEngine->AddOnScreenDebugMessage(122, 3, FColor::Black, "Hero::SwapWeapon");
 	if (!Super::SwapWeapon(InSlot)) return false;
-
-	BindWeaponAmmoDelegate();
+	EquippedWeapon->BindAmmoUpdateDelegate(this);
 	return true;
 }

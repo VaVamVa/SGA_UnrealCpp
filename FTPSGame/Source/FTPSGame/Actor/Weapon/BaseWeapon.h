@@ -14,10 +14,11 @@ class UArrowComponent;
 class UDA_WeaponDataAsset;
 class UTextRenderComponent;
 class ABaseCharacter;
+class AHero;
 
 #include "BaseWeapon.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAmmoUpdate, int32, Ammo, int32, Magazine);
+DECLARE_DELEGATE_TwoParams(FAmmoUpdate, int32, int32);
 
 UCLASS()
 class FTPSGAME_API ABaseWeapon : public AActor, public IInteract
@@ -95,7 +96,9 @@ public:
 
 	FAmmoUpdate AmmoUpdate;
 
-	void UpdateTextFromTextRenderComp();
+	UFUNCTION()
+	void BindAmmoUpdateDelegate(AHero* Player);
+	
 	
 	enum TEXT_COLOR
 	{
@@ -130,4 +133,6 @@ protected:
 
 	UFUNCTION()
 	void SpawnDropMagazine();
+
+	void UpdateTextFromTextRenderComp();
 };

@@ -220,12 +220,15 @@ void ABaseCharacter::Interact()
 		Object->Interact(this);
 }
 
-void ABaseCharacter::PlayCustomMontage(FString Key, float PlayRate, int32 CustomIndex, bool InMirrorPlaying)
+bool ABaseCharacter::PlayCustomMontage(FString Key, float PlayRate, int32 CustomIndex, bool InMirrorPlaying)
 {
-	UAnimMontage* Montage = AnimMontageMap.Find(Key)->Montages[CustomIndex];
-
-	bMirrorPlaying = InMirrorPlaying;
-	PlayAnimMontage(Montage, PlayRate);
+	if (UAnimMontage* Montage = AnimMontageMap.Find(Key)->Montages[CustomIndex])
+	{
+		bMirrorPlaying = InMirrorPlaying;
+		PlayAnimMontage(Montage, PlayRate);
+		return true;
+	}
+	return false;
 }
 
 void ABaseCharacter::EndSwapping()
@@ -242,6 +245,7 @@ void ABaseCharacter::SwitchFireMode()
 
 void ABaseCharacter::Fire()
 {
+	if (bDoSomethingCantCombatAction) return;
 	EquippedWeapon->PullTrigger();
 	//GEngine->AddOnScreenDebugMessage(1244, 0.5f, FColor::Red, "Fire");
 }

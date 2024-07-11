@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "Actor/Character/BaseCharacter.h"
 
+#include "Widgets/PlayerHUD.h"
+
 class USpringArmComponent;
 class UCameraComponent;
-
-class APlayerHUD;
 
 class UDA_InputMappingDataAsset;
 class UEnhancedInputComponent;
@@ -55,8 +55,6 @@ private:
 
 	void Move(const FInputActionValue& Value);
 	void View(const FInputActionValue& Value);
-
-	void BindWeaponAmmoDelegate();
 
 protected:
 	bool SwapWeapon(ESlot InSlot) override;

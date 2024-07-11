@@ -104,7 +104,7 @@ public:
 
 	virtual void Interact();
 
-	void PlayCustomMontage(FString Key, float PlayRate = 1.0f, int32 CustomIndex = 0, bool InMirrorPlaying = false);
+	bool PlayCustomMontage(FString Key, float PlayRate = 1.0f, int32 CustomIndex = 0, bool InMirrorPlaying = false);
 
 	FORCEINLINE bool IsAiming() { return bAiming; }
 	FORCEINLINE ABaseWeapon* GetEquippedWeapon() { return EquippedWeapon; }
@@ -135,6 +135,8 @@ public:
 	void SetVisibleMagazine(bool bVisible);
 
 	virtual void StartReload();
+
+	FORCEINLINE bool GetCantCombatAction() { return bDoSomethingCantCombatAction; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)

@@ -46,7 +46,7 @@ void APlayerHUD::Tick(float Delta)
 	AimCircle->UpdateCirclePosition(Hero->GetEquippedWeapon());
 
 	// AmmoInfo UI Position
-	{
+	/*{
 		FVector WidgetWorldLocation = Hero->GetMesh()->GetBoneLocation("hand_l");
 		WidgetWorldLocation += Hero->GetCamera()->GetRightVector() * 100;
 
@@ -54,5 +54,5 @@ void APlayerHUD::Tick(float Delta)
 		UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(UGameplayStatics::GetPlayerController(GetWorld(), 0), WidgetWorldLocation, NewPosition, true);
 
 		AmmoInfo->UpdatePosition(NewPosition);
-	}
+	}*/
 }

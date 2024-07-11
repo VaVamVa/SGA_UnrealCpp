@@ -119,7 +119,6 @@ void ABaseWeapon::ConversionItemType(EWeaponItemType InType, USceneComponent* In
 		Body->SetGenerateOverlapEvents(true);
 
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		//EquippedCharacter = nullptr;
 		break;
 	}
 	case EWeaponItemType::Equipped:
@@ -226,8 +225,6 @@ void ABaseWeapon::UpdateHitPoint(float DeltaSecond)
 		HitPoint = MuzzleEndLocation;
 	else
 		HitPoint = AimHitResult.ImpactPoint;
-
-	GEngine->AddOnScreenDebugMessage(142, 1, FColor::Emerald, FString::FromInt(bFire));
 }
 
 void ABaseWeapon::PullTrigger()
@@ -252,10 +249,20 @@ void ABaseWeapon::ReleaseTrigger()
 	BulletCounter = 0;
 }
 
+void ABaseWeapon::BindAmmoUpdateDelegate(AHero* Player)
+{
+	if (Player)
+	{
+		AmmoUpdate.BindUFunction(Player->GetHUD()->GetAmmoInfo(), "Update");
+		if (!AmmoUpdate.IsBound()) return;
+		AmmoUpdate.Execute(CurrentAmmo, CurrentMag);
+		UpdateTextFromTextRenderComp();
+	}
+}
+
 void ABaseWeapon::UpdateTextFromTextRenderComp()
 {
 	TextRenderComp->SetText(FText::FromString(FString::FromInt(CurrentAmmo)));
-	GEngine->AddOnScreenDebugMessage(1344, 1, FColor::Green, (TextRenderComp->Text).ToString());
 
 	if (CurrentAmmo <= 0)
 		DynMaterial->SetVectorParameterValue("GlowColor", TextColors[TEXT_COLOR::Red]);
@@ -269,15 +276,6 @@ void ABaseWeapon::UpdateTextFromTextRenderComp()
 
 void ABaseWeapon::SpawnProjectile()
 {
-	//if (FireMode == EFireMode::Burst)
-	//{
-	//	BulletCounter++;
-	//	if (BulletCounter >= BURST_BULLET_LIMIT)
-	//	{
-	//		bFire = false;
-	//		return;
-	//	}
-	//}
 	if (CurrentAmmo <= 0 || bFire == false) return;
 
 	FTransform Transform = Body->GetSocketTransform("MuzzleFlash");
@@ -289,9 +287,7 @@ void ABaseWeapon::SpawnProjectile()
 
 	BulletCounter++;
 	CurrentAmmo--;
-	if (AmmoUpdate.IsBound()) AmmoUpdate.Broadcast(CurrentAmmo, CurrentMag);
-	//UpdateTextFromTextRenderComp();
-	//else GEngine->AddOnScreenDebugMessage(12, 3, FColor::Black, "Not Bound AmmoUpdate Delegate");
+	if (AmmoUpdate.IsBound()) AmmoUpdate.Execute(CurrentAmmo, CurrentMag);
 }
 
 void ABaseWeapon::CheckChamber()
@@ -333,15 +329,17 @@ void ABaseWeapon::SwapMagazine(bool bBeingSwap)
 	{
 		CurrentAmmo = 0;
 		SpawnDropMagazine();
+		bChamberEmpty = true;
 	}
 	else
 	{
 		CurrentAmmo = DataAsset->GetMaxRonud();
 		CurrentMag--;
+		bChamberEmpty = false;
 		
 	}
 
-	if (AmmoUpdate.IsBound()) AmmoUpdate.Broadcast(CurrentAmmo, CurrentMag);
+	if (AmmoUpdate.IsBound()) AmmoUpdate.Execute(CurrentAmmo, CurrentMag);
 }
 
 void ABaseWeapon::SpawnDropMagazine()
@@ -355,12 +353,12 @@ void ABaseWeapon::SpawnDropMagazine()
 	DropMagazine->SetMobility(EComponentMobility::Movable);
 	DropMagazine->GetStaticMeshComponent()->SetSimulatePhysics(true);
 	DropMagazine->GetStaticMeshComponent()->SetStaticMesh(DataAsset->GetMagazineMesh());
-	DropMagazine->GetStaticMeshComponent()->SetCollisionProfileName("ShellProfile");
+	DropMagazine->GetStaticMeshComponent()->SetCollisionProfileName("ShellProfile"); // Use Shell's collision profile
 
-	FVector Force = -DropMagazine->GetActorUpVector() * 50;
+	FVector Force = -DropMagazine->GetActorUpVector() * 500;
 	DropMagazine->GetStaticMeshComponent()->AddForce(Force);
 
-	DropMagazine->SetLifeSpan(8);
+	DropMagazine->SetLifeSpan(8.0f);
 }
 
 void ABaseWeapon::SpawnShell()
@@ -395,10 +393,5 @@ void ABaseWeapon::SetMesh(EWeaponName InWeaponName)
 void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//ABaseCharacter* TmpOwner = Cast<ABaseCharacter>(GetOwner());
-
-	//if (TmpOwner == nullptr) return;
-
 }
 

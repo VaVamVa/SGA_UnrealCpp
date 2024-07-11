@@ -48,11 +48,11 @@ void ABullet::Tick(float DeltaTime)
 
 void ABullet::HitSomething(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(15, 1, FColor::Blue, OtherActor->GetActorLabel());
 	// Ignore
 	if (OtherActor == GetOwner() || OtherActor->StaticClass() == this->StaticClass()) return;
 
 	// Action
+	GEngine->AddOnScreenDebugMessage(15, 1, FColor::Blue, OtherActor->GetActorLabel());
 
 
 	// Destroy self
