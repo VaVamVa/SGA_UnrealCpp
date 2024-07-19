@@ -11,8 +11,9 @@ public class FTPSGame : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] {
 			"Core", "CoreUObject", "Engine", 
 			"InputCore", "EnhancedInput",
-            "AnimGraphRuntime"
-
+            "AnimGraphRuntime",
+			"AIModule",
+            "NavigationSystem"
         });
 
         PublicIncludePaths.Add(ModuleDirectory);
