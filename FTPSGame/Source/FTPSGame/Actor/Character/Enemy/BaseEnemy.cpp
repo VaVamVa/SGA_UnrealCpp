@@ -4,6 +4,9 @@
 #include "Actor/Character/Enemy/BaseEnemy.h"
 
 #include "EnemyController.h"
+
+#include "NavMesh/NavMeshBoundsVolume.h"
+
 #include "Utilities/Helper.h"
 
 // Sets default values
@@ -28,6 +31,7 @@ void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Cast<AEnemyController>(GetController())->SetGenericTeamId(ID);
 }
 
 // Called every frame

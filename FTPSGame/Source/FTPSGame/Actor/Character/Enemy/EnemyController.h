@@ -7,6 +7,7 @@
 #include "EnemyController.generated.h"
 
 class UAISenseConfig_Sight;
+class UAISenseConfig_Damage;
 
 /**
  * 
@@ -20,10 +21,10 @@ class FTPSGAME_API AEnemyController : public AAIController
 	UBehaviorTree* BT;
 
 	UPROPERTY()
-	UAIPerceptionComponent* Perception;
+	UAISenseConfig_Sight* SightSense;
 
 	UPROPERTY()
-	UAISenseConfig_Sight* Sight;
+	UAISenseConfig_Damage* DamageSense;
 
 public:
 	AEnemyController();
@@ -31,7 +32,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 private:
 	UFUNCTION()
 	void UpdateEnemy(const TArray<AActor*>& UpdatedActors);
+
+public:
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
+	void SetPeripheralVisionDegree(float InDegree);
 };

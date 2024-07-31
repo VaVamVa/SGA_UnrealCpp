@@ -32,10 +32,6 @@ EBTNodeResult::Type UTask_MakeRandomLocation::ExecuteTask(UBehaviorTreeComponent
 		ABaseEnemy* Enemy = Cast<ABaseEnemy>(Controller->GetCharacter());
 
 		FVector EnemyLocation = Enemy->GetActorLocation();
-		for (TActorIterator<ANavMeshBoundsVolume> It(GetWorld()); It; ++It)
-		{
-			ANavMeshBoundsVolume* NavMeshVolume = *It;
-		}
 		FVector BoxSize = FVector(500, 500, 0);
 
 		FVector RandomLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation, BoxSize);

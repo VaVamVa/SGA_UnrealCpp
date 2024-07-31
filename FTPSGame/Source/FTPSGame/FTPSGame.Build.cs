@@ -16,6 +16,8 @@ public class FTPSGame : ModuleRules
             "NavigationSystem"
         });
 
+        PrivateDependencyModuleNames.AddRange(new string[] { "AnimGraph", "BlueprintGraph", "UnrealEd" });
+
         PublicIncludePaths.Add(ModuleDirectory);
     }
 }

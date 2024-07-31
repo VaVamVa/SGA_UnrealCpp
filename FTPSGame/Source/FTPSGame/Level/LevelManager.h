@@ -6,7 +6,7 @@
 #include "Engine/LevelScriptActor.h"
 #include "LevelManager.generated.h"
 
-class BaseNavMesh;
+class ANavMeshBoundsVolume;
 
 /**
  * 
@@ -16,6 +16,16 @@ class FTPSGAME_API ALevelManager : public ALevelScriptActor
 {
 	GENERATED_BODY()
 	
-	// DistrictName, BaseNaveMeshBound Ptr
-	TMap<FName, BaseNavMesh*> NavMeshes;
+	
+	TMap<FName, ANavMeshBoundsVolume*> NavMeshes;
+
+public:
+	ALevelManager();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	void CoverCurrentNavMeshes();
+	void LoadNavMeshes();
 };
